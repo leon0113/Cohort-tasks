@@ -10,7 +10,7 @@ function something() {
 async function main() {
     let value = await something();
     console.log("hi there 2");
-    console.log(value);
+    console.log('value: ', value);
 }
 
 main();
