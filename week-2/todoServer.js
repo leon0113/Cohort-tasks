@@ -46,4 +46,91 @@ const app = express();
 
 app.use(bodyParser.json());
 
+
+let todos = [];
+let nextTodoId = 1;
+
+///!----------------------------------------------------------------------------3.
+app.post('/todos', (req, res) => {
+    const { title, description } = req.body;
+    if (!title || !description) {
+        return res.status(400).json({ error: 'please fill all the fields' });
+    }
+    const data = {
+        id: nextTodoId++,
+        title,
+        "completed": false,
+        description
+    }
+    todos.unshift(data);
+    res.status(200).json(data)
+})
+
+//!-----------------------------------------------------------------------------1.
+app.get('/todos', (req, res) => {
+    if (!todos.length) {
+        return res.status(400).json({ error: 'No todos available' });
+    }
+    res.status(200).json(todos)
+})
+
+//!-----------------------------------------------------------------------------2.
+app.get('/todos/:id', (req, res) => {
+    const todoId = parseInt(req.params.id);
+
+    // Find the todo item with the given ID
+    const todo = todos.find(todo => todo.id === todoId);
+
+    if (todo) {
+        // If todo item found, respond with 200 OK and the todo item
+        res.status(200).json(todo);
+    } else {
+        // If todo item not found, respond with 404 Not Found
+        res.status(404).send('Todo item not found');
+    }
+})
+
+///!----------------------------------------------------------------------------4.
+app.put('/todos/:id', (req, res) => {
+    const todoId = parseInt(req.params.id);
+    const { title, completed, description } = req.body;
+    if (!title && !completed && !description) {
+        return res.status(400).json({ error: 'please input at least one change' });
+    }
+    const todoIndex = todos.findIndex((todo) => todo.id === todoId);
+    if (todoIndex === -1) {
+        return res.status(404).json({ error: 'Todo does not exist' });
+    }
+    if (title != undefined) {
+        todos[todoIndex].title = title
+    }
+    if (completed != undefined) {
+        todos[todoIndex].completed = completed
+    }
+    if (description != undefined) {
+        todos[todoIndex].description = description
+    }
+    res.status(200).json(todos[todoIndex]);
+
+})
+
+
+///!----------------------------------------------------------------------------5.
+app.delete('/todos/:id', (req, res) => {
+    const todoId = parseInt(req.params.id);
+
+    const todoIndex = todos.findIndex((todo) => todo.id === todoId);
+    if (todoIndex === -1) {
+        return res.status(404).json({ error: 'Todo does not exist' });
+    }
+    todos = todos.filter(todo => todo.id !== todoId);
+    res.status(200).json({ msg: "todo deleted successfully!", todos });
+})
+
+// Start the server
+app.listen(5001, () => {
+    console.log(`Server is listening at http://localhost:5001`);
+});
+
+
 module.exports = app;
