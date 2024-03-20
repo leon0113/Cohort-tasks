@@ -16,10 +16,6 @@ const z = require('zod');
  * 
  */
 
-// const zodShema = z.object({
-//     username: string().email(),
-//     password: string().min(6)
-// })
 
 const usernameZod = z.string().email();
 const passwordZod = z.string().min(6);
@@ -27,10 +23,10 @@ const passwordZod = z.string().min(6);
 function signJwt(username, password) {
     // Your code here
     try {
-        const userName = usernameZod.parse(username);
-        const pass = passwordZod.parse(password);
+        const userName = usernameZod.safeParse(username);
+        const pass = passwordZod.safeParse(password);
 
-        if (!userName.sucess || !pass.sucess) return null;
+        if (!userName.success || !pass.success) return null;
 
         return jwt.sign({ userName, pass }, jwtPassword);
     } catch (error) {
@@ -38,8 +34,7 @@ function signJwt(username, password) {
     }
 
 }
-const token = signJwt("leon@gmail.com", "leon123");
-// console.log("token: ", token);
+// console.log("token: ", signJwt("tahjib@gmail.com", "leon1234"));
 /**
  * Verifies a JWT using a secret key.
  *
@@ -51,14 +46,16 @@ const token = signJwt("leon@gmail.com", "leon123");
 function verifyJwt(token) {
     // Your code here
     try {
-        const verification = jwt.verify(token, jwtPassword);
-        return true;
+        if (jwt.verify(token, jwtPassword)) {
+            return true;
+        } else {
+            return false;
+        };
     } catch (error) {
-        return false;
+        return error;
     }
 }
-const verifyToken = verifyJwt(token);
-// console.log(verifyToken);
+// console.log(verifyJwt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6eyJzdWNjZXNzIjp0cnVlLCJkYXRhIjoidGFoamliQGdtYWlsLmNvbSJ9LCJwYXNzIjp7InN1Y2Nlc3MiOnRydWUsImRhdGEiOiJsZW9uMTIzNCJ9LCJpYXQiOjE3MTA3ODU4NTZ9.s1AcgnbT9vUP0nuSatU_sOGncGmRnlH-D0ioVV4fwLc"));
 /**
  * Decodes a JWT to reveal its payload without verifying its authenticity.
  *
@@ -69,15 +66,13 @@ const verifyToken = verifyJwt(token);
 function decodeJwt(token) {
     // Your code here
     const decodedToken = jwt.decode(token);
-    console.log(decodedToken);
     if (decodedToken) {
         return true;
     } else {
         return false;
     }
 }
-const res = decodeJwt(token);
-console.log(res);
+console.log(decodeJwt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6eyJzdWNjZXNzIjp0cnVlLCJkYXRhIjoidGFoamliQGdtYWlsLmNvbSJ9LCJwYXNzIjp7InN1Y2Nlc3MiOnRydWUsImRhdGEiOiJsZW9uMTIzNCJ9LCJpYXQiOjE3MTA3ODU4NTZ9.s1AcgnbT9vUP0nuSatU_sOGncGmRnlH-D0ioVV4fwLc"));
 
 
 module.exports = {
