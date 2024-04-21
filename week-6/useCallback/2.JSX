@@ -11,14 +11,10 @@ export default function App() {
 
     // Your code starts here
     const showAlert = useCallback(() => {
-        console.log("inside alert");
+        // console.log("inside alert");
         alert(inputText);
     }, [inputText])
     // Your code ends here
-    // function showAlert() {
-    //   console.log("inside alert");
-    //   alert(inputText)
-    // }
 
     return (
         <div>
